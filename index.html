@@ -45,16 +45,14 @@
             y: 10,
             width: 20,
             height: 20,
-            speed: 1,
+            speed: 2,
             radius: 10,
             draw: function() {
-
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true)
                 ctx.closePath();
-                ctx.fillStyle = "#ddd";
+                ctx.fillStyle = "#eee";
                 ctx.fill()
-
                 switch (this.direction) {
                     case 'right':
                         this.x += this.speed;
@@ -69,7 +67,6 @@
                         this.y += this.speed;
                         break;
                 }
-
             }
         }
 
@@ -79,8 +76,6 @@
                 this.x = a
                 this.y = b
             }
-            x
-            y
             width = 20
             height = 20
             radius = 10
@@ -88,27 +83,31 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true)
                 ctx.closePath();
-                ctx.fillStyle = "orange";
+                ctx.fillStyle = "ForestGreen";
                 ctx.fill()
             }
         }
 
+        badColor = ['#DC143C', '#FF00FF', '#DDA0DD', '#0000FF', '#1E90FF', '#AFEEEE', '#FF8C00', '#FF6347', 'Gray']
+
         //点类
         class BadFood {
-            constructor(a = 100, b = 100) {
+            constructor(a = 100, b = 100, c = 10) {
                 this.x = a
                 this.y = b
+                this.radius = c
+                this.color = badColor[Math.floor(Math.random() * 10)]
             }
             x
             y
+            radius
             width = 20
             height = 20
-            radius = 10
             draw = function() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true)
                 ctx.closePath();
-                ctx.fillStyle = "red";
+                ctx.fillStyle = this.color;
                 ctx.fill()
             }
         }
@@ -119,8 +118,8 @@
         function draw() {
             clear()
 
-            ctx.fillStyle = "rgb(0,5,0)";
-            ctx.fillRect(0, 0, 2000, 2000);
+            ctx.fillStyle = "rgba(0,0,0,0.8)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             //生成新豆子
             if (foods.length < 10) {
@@ -128,7 +127,7 @@
             }
             //生成新豆子
             if (badfoods.length < badcount) {
-                badfoods.push(new BadFood(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10))
+                badfoods.push(new BadFood(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10, Math.random() * 15 + 5))
             }
 
 
@@ -136,7 +135,7 @@
             for (let i = 0; i < foods.length; i++) {
                 if (foods[i].x + foods[i].radius > user.x && foods[i].x - foods[i].radius < user.x && foods[i].y + foods[i].radius > user.y && foods[i].y - foods[i].radius < user.y) {
                     foods[i] = new Food(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10)
-                    user.speed *= 1.1
+                    user.speed += count * 0.03
                     count++
                     badcount++
                 }
