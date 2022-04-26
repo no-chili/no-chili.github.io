@@ -28,13 +28,26 @@
         canvas.width = document.body.clientWidth
         canvas.height = document.body.clientHeight
 
+        //得分
         let count = 0
 
+        //坏点数量
         let badcount = 0
+
+        //存放点
+        const foods = []
+
+        //存放坏点
+        const badfoods = []
+
+        let ra
+
+        //一些颜色
+        badColor = ['#DC143C', '#FF00FF', '#DDA0DD', '#0000FF', '#1E90FF', '#AFEEEE', '#FF8C00', '#FF6347', 'Gray']
 
         //清除画布
         function clear() {
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.fillStyle = 'rgb(0,0,0,0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
@@ -88,9 +101,8 @@
             }
         }
 
-        badColor = ['#DC143C', '#FF00FF', '#DDA0DD', '#0000FF', '#1E90FF', '#AFEEEE', '#FF8C00', '#FF6347', 'Gray']
 
-        //点类
+        //坏点类
         class BadFood {
             constructor(a = 100, b = 100, c = 10) {
                 this.x = a
@@ -98,9 +110,6 @@
                 this.radius = c
                 this.color = badColor[Math.floor(Math.random() * 10)]
             }
-            x
-            y
-            radius
             width = 20
             height = 20
             draw = function() {
@@ -112,26 +121,21 @@
             }
         }
 
-        const foods = []
-        const badfoods = []
-
-        function draw() {
-            clear()
-
-            ctx.fillStyle = "rgba(0,0,0,0.8)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+        //画出豆子
+        function create() {
             //生成新豆子
             if (foods.length < 10) {
                 foods.push(new Food(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10))
             }
-            //生成新豆子
+            //生成新坏豆子
             if (badfoods.length < badcount) {
                 badfoods.push(new BadFood(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10, Math.random() * 15 + 5))
             }
+        }
 
-
-            //检查豆子，被吃就移除生成新的，否则继续渲染
+        //判断检查
+        function check() {
+            //检查豆子，被吃就移除生成新的，否则继续渲染(以本体圆心做判断)(因为本体半径的存在可能视觉上会有不好的体验，如果嫌弃这个做法自行改良)
             for (let i = 0; i < foods.length; i++) {
                 if (foods[i].x + foods[i].radius > user.x && foods[i].x - foods[i].radius < user.x && foods[i].y + foods[i].radius > user.y && foods[i].y - foods[i].radius < user.y) {
                     foods[i] = new Food(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10)
@@ -142,16 +146,21 @@
                 foods[i].draw()
             }
 
-            //检查坏豆子
+            //检查坏豆子,吃到结束
             for (let i = 0; i < badfoods.length; i++) {
                 if (badfoods[i].x + badfoods[i].radius > user.x && badfoods[i].x - badfoods[i].radius < user.x && badfoods[i].y + badfoods[i].radius > user.y && badfoods[i].y - badfoods[i].radius < user.y) {
                     window.cancelAnimationFrame(ra)
                     ctx.font = "48px serif";
                     ctx.fillText(`得分:${count}`, 600, 100);
-                    return console.log(count);
+                    return false;
                 }
                 badfoods[i].draw()
             }
+        }
+
+        //边界判断
+        function edge() {
+            //穿越边界
             if (user.x > canvas.width && user.direction === 'right') {
                 user.x = 0
             }
@@ -164,28 +173,49 @@
             if (user.y < 0 && user.direction == 'top') {
                 user.y = canvas.height
             }
+        }
 
+        //在canvas上作画
+        function draw() {
+            //清除画布
+            clear()
+
+            //画出豆子
+            create()
+
+            //检查豆子
+            if (check() === false) {
+                return
+            }
+
+            //检查边缘
+            edge()
+
+            //画出本体
             user.draw()
 
+            //继续画下一帧
             ra = window.requestAnimationFrame(draw)
         }
 
+        //改变运动方向
         window.addEventListener('keydown', (event) => {
-            if (event.keyCode == 65) {
+            console.log(event.key);
+            if (event.key == 'a') {
                 user.direction = 'left'
-            } else if (event.keyCode == 83) {
+            } else if (event.key == 's') {
                 user.direction = 'bottom'
-            } else if (event.keyCode == 87) {
+            } else if (event.key == 'w') {
                 user.direction = 'top'
-            } else if (event.keyCode == 68) {
+            } else if (event.key == 'd') {
                 user.direction = 'right'
-            } else if (event.keyCode == 37) {
+            } else if (event.key == 'ArrowLeft') {
                 user.direction = 'left'
-            } else if (event.keyCode == 40) {
+            } else if (event.key == 'ArrowDown') {
                 user.direction = 'bottom'
-            } else if (event.keyCode == 38) {
+            } else if (event.key == 'ArrowUp') {
                 user.direction = 'top'
-            } else if (event.keyCode == 39) {
+            } else if (event.key == 'ArrowRight') {
                 user.direction = 'right'
             }
         })
