@@ -137,7 +137,7 @@
         function check() {
             //检查豆子，被吃就移除生成新的，否则继续渲染(以本体圆心做判断)(因为本体半径的存在可能视觉上会有不好的体验，如果嫌弃这个做法自行改良)
             for (let i = 0; i < foods.length; i++) {
-                if (foods[i].x + foods[i].radius > user.x && foods[i].x - foods[i].radius < user.x && foods[i].y + foods[i].radius > user.y && foods[i].y - foods[i].radius < user.y) {
+                if (foods[i].x + foods[i].radius*2 > user.x && foods[i].x - foods[i].radius*2 < user.x && foods[i].y + foods[i].radius*2 > user.y && foods[i].y - foods[i].radius*2 < user.y) {
                     foods[i] = new Food(Math.random() * (canvas.width - 10) + 10, Math.random() * (canvas.height - 10) + 10)
                     user.speed += count * 0.03
                     count++
